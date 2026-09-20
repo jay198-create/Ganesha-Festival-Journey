@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const D=window.GFJData, app=document.querySelector("#app"), PROFILE_KEY="ganesha-festival-v3", KEY="ganesha-festival-v5-builder";
+  const D=window.GFJData, A=window.GFJArt, app=document.querySelector("#app"), PROFILE_KEY="ganesha-festival-v3", KEY="ganesha-festival-v5-builder";
   if(!D||!app) return;
 
   const defaultState=()=>({
@@ -46,7 +46,7 @@
   }
 
   function renderSetup(){
-    const idol=D.idols.find(x=>x.id===state.selectedIdol), mandap=D.mandaps.find(x=>x.id===state.selectedMandap);
+    const idol=D.idols.find(x=>x.id===state.selectedIdol), mandap=D.mandaps.find(x=>x.id===state.selectedMandap), decorations=state.activeDecor.map(id=>D.decorations.find(x=>x.id===id)).filter(Boolean);
     return `<div class="v5-grid two">
       <article class="v5-card">
         <span class="eyebrow">YOUR GROUP</span><h2>Mandal setup</h2>
@@ -58,11 +58,7 @@
       </article>
       <article class="v5-card preview-card">
         <span class="eyebrow">CURRENT FESTIVAL</span>
-        <div class="v5-mandap-preview" style="--p:${mandap?.primary||"#785020"};--s:${mandap?.secondary||"#1e463c"}">
-          <div class="roof"></div><div class="pillar l"></div><div class="pillar r"></div>
-          <div class="idol-slot">${idol?`<img src="${idol.image}" alt="${e(idol.name)}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'idol-fallback',textContent:'ॐ'}))">`:'<span class="idol-fallback">ॐ</span>'}</div>
-          ${state.activeDecor.slice(0,8).map((id,i)=>`<span class="decor-dot d${i%8}">${D.decorations.find(x=>x.id===id)?.icon||"✦"}</span>`).join("")}
-        </div>
+        ${A?.scene ? A.scene(mandap,idol,decorations) : `<div class="v5-mandap-preview" style="--p:${mandap?.primary||"#785020"};--s:${mandap?.secondary||"#1e463c"}"><div class="idol-slot">${idol?`<img src="${idol.image}" alt="${e(idol.name)}">`:'<span class="idol-fallback">ॐ</span>'}</div></div>`}
         <h3>${e(mandap?.name||"Choose a mandap")}</h3>
         <p>${idol?e(idol.name):"Choose a Ganesha idol"} · Day ${state.day}/${state.duration}</p>
       </article>
@@ -85,7 +81,7 @@
     const per=12,pages=Math.ceil(D.mandaps.length/per),page=Math.min(state.page,pages-1),rows=D.mandaps.slice(page*per,page*per+per);
     return `<div class="v5-title"><span class="eyebrow">120 MANDAP DESIGNS</span><h2>Build your pandal</h2><p>Architecture, fabric, lighting and theme combinations are generated as real in-game designs.</p></div>
       <div class="v5-catalog">${rows.map(x=>`<article class="shop-card ${state.selectedMandap===x.id?"selected":""}">
-        <div class="mini-mandap" style="--p:${x.primary};--s:${x.secondary}"><i></i><i></i><b></b></div>
+        ${A?.mandapSvg ? A.mandapSvg(x) : `<div class="mini-mandap" style="--p:${x.primary};--s:${x.secondary}"><i></i><i></i><b></b></div>`}
         <h3>${e(x.name)}</h3><p>${e(x.architecture)} · ${e(x.theme)}</p><b>${money(x.price)}</b>
         ${state.ownedMandaps.includes(x.id)?`<button data-v5="select-mandap" data-id="${x.id}" class="secondary">${state.selectedMandap===x.id?"SELECTED":"USE MANDAP"}</button>`:`<button data-v5="buy-mandap" data-id="${x.id}" class="primary">BUY</button>`}
       </article>`).join("")}</div>
@@ -97,14 +93,14 @@
     const per=20,pages=Math.ceil(filtered.length/per),page=Math.min(state.page,Math.max(0,pages-1)),rows=filtered.slice(page*per,page*per+per);
     return `<div class="v5-title"><span class="eyebrow">500 DECOR OPTIONS</span><h2>Decorate every corner</h2></div>
       <select id="decor-filter"><option value="all">All decorations</option>${cats.slice(1).map(c=>`<option ${state.filter===c?"selected":""}>${e(c)}</option>`).join("")}</select>
-      <div class="decor-grid">${rows.map(x=>`<article class="decor-card ${state.activeDecor.includes(x.id)?"selected":""}"><span>${x.icon}</span><div><b>${e(x.name)}</b><small>Tier ${x.tier} · ${money(x.price)}</small></div>
+      <div class="decor-grid">${rows.map(x=>`<article class="decor-card ${state.activeDecor.includes(x.id)?"selected":""}"><div class="decor-thumb">${A?.decorSvg ? A.decorSvg(x) : `<span>${x.icon}</span>`}</div><div><b>${e(x.name)}</b><small>Tier ${x.tier} · ${money(x.price)}</small></div>
       ${state.ownedDecor.includes(x.id)?`<button data-v5="toggle-decor" data-id="${x.id}">${state.activeDecor.includes(x.id)?"Remove":"Place"}</button>`:`<button data-v5="buy-decor" data-id="${x.id}">Buy</button>`}</article>`).join("")}</div>
       <div class="pager"><button data-v5="page" data-value="${page-1}" ${page<=0?"disabled":""}>←</button><span>Page ${page+1} / ${pages}</span><button data-v5="page" data-value="${page+1}" ${page>=pages-1?"disabled":""}>→</button></div>`;
   }
 
   function renderPuja(){
     return `<div class="v5-title"><span class="eyebrow">PUJA STORE</span><h2>Prepare today's puja</h2><p>Purchase offerings and ritual items with modaks, then use them in the daily puja checklist.</p></div>
-      <div class="decor-grid">${D.pujaItems.map(x=>`<article class="decor-card"><span>${x.icon}</span><div><b>${e(x.name)}</b><small>${money(x.price)}</small></div>
+      <div class="decor-grid">${D.pujaItems.map(x=>`<article class="decor-card"><div class="decor-thumb">${A?.pujaSvg ? A.pujaSvg(x) : `<span>${x.icon}</span>`}</div><div><b>${e(x.name)}</b><small>${money(x.price)}</small></div>
       ${state.ownedPuja.includes(x.id)?'<em>Owned</em>':`<button data-v5="buy-puja" data-id="${x.id}">Buy</button>`}</article>`).join("")}</div>`;
   }
 

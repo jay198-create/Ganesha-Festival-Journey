@@ -57,7 +57,6 @@ Local challenge records are not anti-cheat-secured online leaderboard entries.
 No scores are submitted automatically. A trusted online ranking would require
 server-side verification and an organizer-approved integration.
 
-
 ## Version 5 development branch
 
 The `v5-festival-cloud` branch expands the original game into a larger Ganesh Chaturthi festival simulator while preserving the existing browser game.
@@ -74,15 +73,24 @@ New systems include:
 - 3, 6, 9 and 11-day festival progression
 - Daily puja checklist
 - Procession and Visarjan finale
-- Player accounts and durable Cloudflare D1 saves
 - Resume data for active runs, scores, modaks, inventory, festival progress and level progress
 
-### Durable saves
+### Contest privacy
 
-Local browser storage is now a cache for responsiveness. When the player signs in, the same state is synchronized to Cloudflare D1. Clearing browser data removes the local copy and login cookie, but not the D1 account save. Signing in again restores the saved game.
+The game has no player accounts and does not ask for or transmit a student's email address, phone number, password, roll number, college ID or other identity information.
 
-See `docs/CLOUD-SAVE-SETUP.md` before deploying the v5 branch. The Cloudflare Pages project must have a D1 binding named `DB` and the database schema must be initialized.
+Progress uses browser `localStorage` only. Nothing in the save system is sent to a server.
+
+A privacy-safe manual backup option is included:
+- **Save → Download save file** exports the game state as JSON to the player's own device.
+- **Save → Restore save** reads that local file back into the browser.
+- No login or cloud database is involved.
+
+If browser/site storage is cleared without first downloading a backup file, local progress cannot be recovered. This is intentional so the contest build does not require persistent identifiers or collection of personal data.
+
+The optional Festival Group/Mandal name is stored only inside the player's local game state and is never transmitted.
 
 ### Large idol artwork
 
-The generated 131-idol PNG library is intentionally stored separately from the public Git repository because the asset pack is very large. The catalog expects `assets/idols/idol_001.png` through `idol_131.png`. For production, these assets can be served from Cloudflare R2 / Images or copied into that directory.
+The generated 131-idol PNG library is intentionally stored separately from the public Git repository because the asset pack is very large. The catalog expects `assets/idols/idol_001.png` through `idol_131.png`. For production, these assets can be copied into that directory or served as static assets without collecting player information.
+

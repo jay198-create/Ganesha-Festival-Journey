@@ -114,17 +114,23 @@
     const key="day-"+state.day, done=state.dailyPuja[key]||[];
     const steps=["Clean mandap","Light diya","Offer flowers / durva","Chant today's mantra","Offer naivedyam","Perform aarti"];
     const mantra=D.mantras[(state.day-1)%D.mantras.length];
-    return `<div class="v5-grid two"><article class="v5-card"><span class="eyebrow">DAY ${state.day} OF ${state.duration}</span><h2>Daily Ganesh puja</h2><p>Today's learning: <b>${e(mantra.title)}</b></p>
+    return `<div class="v5-grid two"><article class="v5-card"><span class="eyebrow">DAY ${state.day} OF ${state.duration}</span><h2>Daily Ganesh puja</h2>
+      <div class="ritual-scene">${A?.pujaScene ? A.pujaScene(state.day,mantra.title) : ""}</div>
+      <p>Today's learning: <b>${e(mantra.title)}</b></p>
       <div class="checklist">${steps.map((s,i)=>`<label><input type="checkbox" data-v5-check="${i}" ${done.includes(i)?"checked":""}> ${e(s)}</label>`).join("")}</div>
       <button data-v5="complete-day" class="primary" ${done.length<steps.length?"disabled":""}>${state.day>=state.duration?"COMPLETE FINAL PUJA":"COMPLETE DAY & CONTINUE"}</button></article>
-      <article class="v5-card"><span class="eyebrow">FESTIVAL LIFE</span><h2>${e(state.groupName)}</h2><p>Idol: ${e(D.idols.find(x=>x.id===state.selectedIdol)?.name||"Not selected")}</p><p>Mandap: ${e(D.mandaps.find(x=>x.id===state.selectedMandap)?.name||"Not selected")}</p><p>Decorations placed: ${state.activeDecor.length}</p><p>Puja items owned: ${state.ownedPuja.length}</p><p>Mantras learned: ${state.mantraLearned.length}/${D.mantras.length}</p></article></div>`;
+      <article class="v5-card"><span class="eyebrow">FESTIVAL LIFE</span><h2>${e(state.groupName)}</h2>
+      <div class="festival-day-scene">${A?.festivalDaySvg ? A.festivalDaySvg(state.day,state.duration) : ""}</div>
+      <p>Idol: ${e(D.idols.find(x=>x.id===state.selectedIdol)?.name||"Not selected")}</p><p>Mandap: ${e(D.mandaps.find(x=>x.id===state.selectedMandap)?.name||"Not selected")}</p><p>Decorations placed: ${state.activeDecor.length}</p><p>Puja items owned: ${state.ownedPuja.length}</p><p>Mantras learned: ${state.mantraLearned.length}/${D.mantras.length}</p></article></div>`;
   }
 
   function renderProcession(){
     const unlocked=state.day>=state.duration;
     const steps=["Prepare Ganapati for farewell","Gather the mandal","Begin the procession","Chant Ganpati Bappa Morya","Reach the waterbody","Final aarti and prayers","Respectful visarjan"];
-    if(!unlocked) return `<article class="v5-card"><span class="eyebrow">LOCKED UNTIL FINAL DAY</span><h2>Procession & Visarjan</h2><p>Complete all ${state.duration} festival days first. You are currently on day ${state.day}.</p></article>`;
-    return `<div class="v5-grid two"><article class="v5-card"><span class="eyebrow">FAREWELL PROCESSION</span><h2>Ganpati Bappa Morya</h2><div class="procession-track">${steps.map((x,i)=>`<div class="${i<state.processionStep?"done":i===state.processionStep?"current":""}"><b>${i+1}</b><span>${e(x)}</span></div>`).join("")}</div>
+    if(!unlocked) return `<article class="v5-card"><span class="eyebrow">LOCKED UNTIL FINAL DAY</span><h2>Procession & Visarjan</h2><div class="procession-scene">${A?.processionSvg ? A.processionSvg(0,false) : ""}</div><p>Complete all ${state.duration} festival days first. You are currently on day ${state.day}.</p></article>`;
+    return `<div class="v5-grid two"><article class="v5-card"><span class="eyebrow">FAREWELL PROCESSION</span><h2>Ganpati Bappa Morya</h2>
+      <div class="procession-scene">${A?.processionSvg ? A.processionSvg(state.processionStep,state.visarjanComplete) : ""}</div>
+      <div class="procession-track">${steps.map((x,i)=>`<div class="${i<state.processionStep?"done":i===state.processionStep?"current":""}"><b>${i+1}</b><span>${e(x)}</span></div>`).join("")}</div>
       ${state.visarjanComplete?'<div class="finale">🙏 Festival complete. See you next year.</div>':`<button data-v5="procession-next" class="primary">${state.processionStep>=steps.length-1?"COMPLETE VISARJAN":"NEXT STEP →"}</button>`}</article>
       <article class="v5-card"><span class="eyebrow">YOUR FESTIVAL SUMMARY</span><h2>${e(state.groupName)}</h2><p>${state.duration}-day celebration · ${state.ownedIdols.length} idols unlocked · ${state.ownedMandaps.length} mandaps · ${state.ownedDecor.length} decorations owned.</p><p>Keep playing mini-games to earn more modaks. Your purchased festival collection remains available for future celebrations.</p></article></div>`;
   }

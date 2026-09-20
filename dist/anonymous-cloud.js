@@ -321,6 +321,7 @@
     booted = true;
     await loadScript("core.js?v=5");
     await loadScript("festival-data.js?v=5");
+    await loadScript("festival-art.js?v=5");
     await loadScript("game.js?v=5");
     await loadScript("level-arena.js?v=5");
     await loadScript("festival-studio.js?v=5");

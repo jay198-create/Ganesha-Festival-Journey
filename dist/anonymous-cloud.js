@@ -6,6 +6,7 @@
   const BUILDER_KEY = "ganesha-festival-v5-builder";
   const LEVEL_KEY = "ganesha-festival-v5-levels";
   const SOUND_KEY = "ganesha-sound";
+  const LOCAL_UPDATED_KEY = "ganesha-local-save-updated-at";
   const GAME_KEYS = [PROFILE_KEY, BUILDER_KEY, LEVEL_KEY, SOUND_KEY];
 
   let syncing = false;
@@ -48,24 +49,24 @@
       builder: sanitizeBuilder(read(BUILDER_KEY)),
       levels: read(LEVEL_KEY),
       settings: read(SOUND_KEY),
-      savedAt: Date.now()
+      savedAt: Number(localStorage.getItem(LOCAL_UPDATED_KEY) || 0)
     };
   }
 
   function applyRemote(state) {
     if (!state || typeof state !== "object") return;
-    if (state.profile) localStorage.setItem(PROFILE_KEY, JSON.stringify(state.profile));
+    if (state.profile) originalSetItem.call(localStorage, PROFILE_KEY, JSON.stringify(state.profile));
     if (state.builder) {
       let current = {};
       try { current = JSON.parse(localStorage.getItem(BUILDER_KEY) || "{}"); } catch {}
       // Preserve local-only free text while restoring all gameplay fields.
-      localStorage.setItem(BUILDER_KEY, JSON.stringify({
+      originalSetItem.call(localStorage, BUILDER_KEY, JSON.stringify({
         ...state.builder,
         groupName: current.groupName || "Our Ganesh Mandal"
       }));
     }
-    if (state.levels) localStorage.setItem(LEVEL_KEY, JSON.stringify(state.levels));
-    if (state.settings) localStorage.setItem(SOUND_KEY, JSON.stringify(state.settings));
+    if (state.levels) originalSetItem.call(localStorage, LEVEL_KEY, JSON.stringify(state.levels));
+    if (state.settings) originalSetItem.call(localStorage, SOUND_KEY, JSON.stringify(state.settings));
   }
 
   async function request(method, key, state) {
@@ -86,7 +87,8 @@
     if (syncing || !serverAvailable) return;
     syncing = true;
     try {
-      await request("PUT", getRecoveryKey(), localSnapshot());
+      const result = await request("PUT", getRecoveryKey(), localSnapshot());
+      originalSetItem.call(localStorage, LOCAL_UPDATED_KEY, String(result.updatedAt || Date.now()));
     } catch (error) {
       serverAvailable = false;
       console.warn("Anonymous cloud save unavailable:", error);
@@ -104,7 +106,10 @@
   const originalSetItem = Storage.prototype.setItem;
   Storage.prototype.setItem = function(key, value) {
     originalSetItem.call(this, key, value);
-    if (this === localStorage && GAME_KEYS.includes(key)) scheduleSync();
+    if (this === localStorage && GAME_KEYS.includes(key)) {
+      originalSetItem.call(localStorage, LOCAL_UPDATED_KEY, String(Date.now()));
+      scheduleSync();
+    }
   };
 
   async function loadRemoteBeforeGame() {
@@ -112,11 +117,18 @@
     try {
       const remote = await request("GET", key);
       if (remote.found && remote.state) {
-        const localSaved = Number(localSnapshot().savedAt || 0);
-        const remoteSaved = Number(remote.state.savedAt || 0);
-        if (remoteSaved >= localSaved) applyRemote(remote.state);
+        const localUpdated = Number(localStorage.getItem(LOCAL_UPDATED_KEY) || 0);
+        const remoteUpdated = Number(remote.updatedAt || remote.state.savedAt || 0);
+        if (remoteUpdated >= localUpdated) {
+          applyRemote(remote.state);
+          originalSetItem.call(localStorage, LOCAL_UPDATED_KEY, String(remoteUpdated));
+        } else {
+          const result = await request("PUT", key, localSnapshot());
+          originalSetItem.call(localStorage, LOCAL_UPDATED_KEY, String(result.updatedAt || Date.now()));
+        }
       } else {
-        await request("PUT", key, localSnapshot());
+        const result = await request("PUT", key, localSnapshot());
+        originalSetItem.call(localStorage, LOCAL_UPDATED_KEY, String(result.updatedAt || Date.now()));
       }
     } catch (error) {
       serverAvailable = false;
@@ -153,6 +165,7 @@
     if (!remote.found || !remote.state) throw new Error("No saved game was found for that key.");
     originalSetItem.call(localStorage, SAVE_KEY_NAME, normalized);
     applyRemote(remote.state);
+    originalSetItem.call(localStorage, LOCAL_UPDATED_KEY, String(remote.updatedAt || remote.state.savedAt || Date.now()));
     return true;
   }
 
@@ -247,5 +260,19 @@
     addSaveButton();
     new MutationObserver(addSaveButton).observe(document.body,{childList:true,subtree:true});
     scheduleSync();
+    window.addEventListener("pagehide", () => {
+      if (!serverAvailable) return;
+      try {
+        fetch("/api/save", {
+          method: "PUT",
+          keepalive: true,
+          headers: {
+            "content-type": "application/json",
+            "x-recovery-key": getRecoveryKey()
+          },
+          body: JSON.stringify({ state: localSnapshot() })
+        });
+      } catch {}
+    });
   })();
 })();

@@ -74,21 +74,23 @@ New systems include:
 - Daily puja checklist
 - Procession and Visarjan finale
 - Resume data for active runs, scores, modaks, inventory, festival progress and level progress
+- Anonymous Cloudflare D1 game memory
 
-### Contest privacy
+### Contest privacy and durable game memory
 
-The game has no player accounts and does not ask for or transmit a student's email address, phone number, password, roll number, college ID or other identity information.
+There are no player accounts. The game does not ask for a student's name, email, phone number, password, roll number, college ID, date of birth or address.
 
-Progress uses browser `localStorage` only. Nothing in the save system is sent to a server.
+Cloudflare D1 is retained only for anonymous game-state persistence.
 
-A privacy-safe manual backup option is included:
-- **Save → Download save file** exports the game state as JSON to the player's own device.
-- **Save → Restore save** reads that local file back into the browser.
-- No login or cloud database is involved.
+Each installation gets a random 256-bit recovery key. The server stores only the SHA-256 hash of that key together with structured game progress. The raw key is not stored in D1.
 
-If browser/site storage is cleared without first downloading a backup file, local progress cannot be recovered. This is intentional so the contest build does not require persistent identifiers or collection of personal data.
+The synchronized state includes scores, Modaks, active run, level progress, purchased festival items, festival day and other gameplay state. The free-text Mandal/group name is deliberately excluded from server synchronization.
 
-The optional Festival Group/Mandal name is stored only inside the player's local game state and is never transmitted.
+If all browser cookies and site storage are cleared, the browser also loses its copy of the anonymous recovery key. The player can paste the saved recovery key back into the game to restore progress from D1. No account is required.
+
+Automatic restoration after a complete browser wipe without any recovery key would require another persistent identifier such as an account or device fingerprint, which this contest build intentionally avoids.
+
+See `docs/ANONYMOUS-CLOUD-SAVE.md` for setup and testing.
 
 ### Large idol artwork
 

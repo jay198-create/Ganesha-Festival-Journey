@@ -33,7 +33,7 @@
       ].map(([id,label])=>`<button data-v5="tab" data-id="${id}" class="${state.view===id?"active":""}">${label}</button>`).join("")}
     </div>
     <div class="v5-content">${body}</div>
-    <div class="v5-footer"><button data-v5="back-game" class="secondary">← Back to game</button><small>Anonymous cloud memory enabled. No account, email, password or student identity is collected.</small></div>
+    <div class="v5-footer"><button data-v5="back-game" class="secondary">← Back to game</button><small>Recovery-key cloud memory enabled. Player name is optional; no account, email, password, phone number or student ID is requested.</small></div>
   </section>`;
 
   function render(){

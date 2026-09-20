@@ -74,15 +74,15 @@ New systems include:
 - Daily puja checklist
 - Procession and Visarjan finale
 - Resume data for active runs, scores, modaks, inventory, festival progress and level progress
-- Anonymous Cloudflare D1 game memory
+- Recovery-key Cloudflare D1 game memory with optional player nickname
 
 ### Contest privacy and durable game memory
 
-There are no player accounts. The game does not ask for a student's name, email, phone number, password, roll number, college ID, date of birth or address.
+There are no player accounts. A player may optionally enter a first name or nickname for in-game personalization such as “Welcome, Jayanth”. The game does not request email, phone number, password, roll number, college ID, date of birth, address or payment information.
 
-Cloudflare D1 is retained only for anonymous game-state persistence.
+Cloudflare D1 is retained for recovery-key game-state persistence. If a player supplies a nickname, that nickname is stored with the game save.
 
-Each installation gets a random 256-bit recovery key. The server stores only the SHA-256 hash of that key together with structured game progress. The raw key is not stored in D1.
+Each installation gets a random 256-bit recovery key. The server stores the SHA-256 hash of that key together with structured game progress and the optional nickname. The raw recovery key is not stored in D1.
 
 The synchronized state includes scores, Modaks, active run, level progress, purchased festival items, festival day and other gameplay state. The free-text Mandal/group name is deliberately excluded from server synchronization.
 

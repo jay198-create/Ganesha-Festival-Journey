@@ -22,3 +22,5 @@ export async function onRequestPut({request,env}) {
   const row=await env.DB.prepare("SELECT revision FROM game_state WHERE user_id=?").bind(u.id).first();
   return json({ok:true,revision:row.revision,updatedAt:now});
 }
+
+export const onRequestPost = onRequestPut;

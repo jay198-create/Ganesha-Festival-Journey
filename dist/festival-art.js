@@ -151,5 +151,85 @@
     </div>`;
   }
 
-  window.GFJArt={mandapSvg,decorSvg,pujaSvg,scene};
+
+  function pujaScene(day=1, mantraTitle="Ganesh Puja"){
+    const n=Math.max(1,Number(day)||1), accent=["#ffd25f","#f09f7d","#86d6bd","#e9a6c0"][n%4];
+    return `<svg class="ritual-art" viewBox="0 0 520 260" role="img" aria-label="Daily Ganesh puja scene">
+      <defs>
+        <radialGradient id="pujaGlow${n}"><stop stop-color="${accent}" stop-opacity=".4"/><stop offset="1" stop-color="#07181d" stop-opacity="0"/></radialGradient>
+        <linearGradient id="altar${n}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9b5a2c"/><stop offset="1" stop-color="#52281d"/></linearGradient>
+      </defs>
+      <rect width="520" height="260" rx="18" fill="#08191f"/>
+      <circle cx="260" cy="115" r="135" fill="url(#pujaGlow${n})"/>
+      <path d="M70 210 Q260 185 450 210 L450 245 L70 245Z" fill="#6e452f" opacity=".7"/>
+      <rect x="165" y="160" width="190" height="55" rx="10" fill="url(#altar${n})" stroke="#d8a75b" stroke-width="2"/>
+      <rect x="205" y="145" width="110" height="22" rx="7" fill="#d29a45" stroke="#ffe0a2" stroke-width="2"/>
+      <g transform="translate(260 119)">
+        <circle cx="0" cy="-24" r="23" fill="#e1a873"/>
+        <ellipse cx="-24" cy="-24" rx="15" ry="25" fill="#e7b584"/>
+        <ellipse cx="24" cy="-24" rx="15" ry="25" fill="#e7b584"/>
+        <path d="M4 -12 Q28 7 7 30 Q-4 33 -5 18 Q11 12 4-12" fill="#dda46e"/>
+        <ellipse cx="0" cy="24" rx="30" ry="33" fill="#c74736"/>
+        <path d="M-15 -45 Q0 -72 15 -45Z" fill="#d4a538" stroke="#ffe49a" stroke-width="2"/>
+        <circle cx="-8" cy="-27" r="2.8" fill="#1c2225"/><circle cx="8" cy="-27" r="2.8" fill="#1c2225"/>
+      </g>
+      ${[125,395].map(x=>`<g transform="translate(${x} 165)"><path d="M0 25 q15 10 30 0 q-5 20-15 20t-15-20" fill="#b96c2a"/><path d="M15 20 q-8-16 0-26 q10 11 0 26" fill="#ffd95b"/></g>`).join("")}
+      <g transform="translate(113 188)">${rosette(0,0,26,9,"#df5c67","#ffd67c")}</g>
+      <g transform="translate(406 188)">${rosette(0,0,26,9,"#f1a81d","#ffe094")}</g>
+      <path d="M198 224 Q260 197 322 224" fill="none" stroke="#f4cb73" stroke-width="3" stroke-dasharray="3 6"/>
+      <text x="260" y="34" text-anchor="middle" fill="#efd59a" font-family="Georgia,serif" font-size="14">${esc(mantraTitle)}</text>
+      <text x="260" y="54" text-anchor="middle" fill="#8fb3ad" font-family="Arial,sans-serif" font-size="10">DAY ${n} · PUJA & LEARNING</text>
+    </svg>`;
+  }
+
+  function processionSvg(step=0, complete=false){
+    const s=clamp(Number(step)||0,0,6);
+    const water = s>=4;
+    const farewell = complete || s>=6;
+    return `<svg class="procession-art" viewBox="0 0 620 280" role="img" aria-label="Ganesh festival procession and visarjan scene">
+      <defs>
+        <linearGradient id="skyProc" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${water?"#122e4c":"#182c39"}"/><stop offset="1" stop-color="#09171d"/></linearGradient>
+        <radialGradient id="moonProc"><stop stop-color="#fff1bd"/><stop offset="1" stop-color="#fff1bd" stop-opacity="0"/></radialGradient>
+      </defs>
+      <rect width="620" height="280" rx="18" fill="url(#skyProc)"/>
+      <circle cx="505" cy="55" r="52" fill="url(#moonProc)"/><circle cx="505" cy="55" r="18" fill="#fff0bd"/>
+      <path d="M0 170 L70 120 116 156 177 94 241 156 312 115 375 162 443 108 515 155 570 119 620 150 V215 H0Z" fill="#102a2e"/>
+      ${water?'<path d="M0 208 Q90 188 180 208 T360 208 T540 208 T720 208 V280 H0Z" fill="#154b65"/><path d="M0 226 Q85 208 170 226 T340 226 T510 226 T680 226" fill="none" stroke="#7fc6d4" stroke-opacity=".45" stroke-width="3"/>':'<path d="M0 218 L620 190 V280 H0Z" fill="#4a3529"/><path d="M0 237 L620 210" stroke="#d6a55d" stroke-opacity=".3" stroke-width="3"/>'}
+      <g transform="translate(${135+s*48} ${water?151:165})">
+        <rect x="-48" y="40" width="96" height="18" rx="5" fill="#c88d34"/>
+        <circle cx="-35" cy="61" r="8" fill="#1d2426"/><circle cx="35" cy="61" r="8" fill="#1d2426"/>
+        <g transform="translate(0 8)" opacity="${farewell?.72:1}">
+          <circle cy="-18" r="17" fill="#e1a873"/><ellipse cx="-19" cy="-18" rx="12" ry="19" fill="#e8b682"/><ellipse cx="19" cy="-18" rx="12" ry="19" fill="#e8b682"/>
+          <path d="M3 -8 Q20 5 5 23 Q-3 24-4 13 Q8 9 3-8" fill="#dca16b"/><ellipse cy="18" rx="23" ry="27" fill="#d14d38"/>
+          <path d="M-11 -34 Q0 -55 11 -34Z" fill="#d4a538" stroke="#ffe49a" stroke-width="1.5"/>
+        </g>
+      </g>
+      ${Array.from({length:14},(_,i)=>{
+        const x=30+i*40+(i%3)*5, y=212-(i%4)*8;
+        return `<g transform="translate(${x} ${y})"><circle cy="-23" r="7" fill="#9a6b4d"/><path d="M-8 -15 L8 -15 L12 17 L-12 17Z" fill="${["#b63a38","#d69326","#377f72","#7356a3"][i%4]}"/><path d="M-5 17 v17 M5 17 v17" stroke="#5c493c" stroke-width="4"/></g>`;
+      }).join("")}
+      <g transform="translate(72 201)"><circle cx="0" cy="0" r="17" fill="#c8893a"/><circle cx="0" cy="0" r="11" fill="#5e321e"/><path d="M-23 -9 L23 9 M-23 9 L23 -9" stroke="#f0c26e" stroke-width="3"/></g>
+      ${Array.from({length:9},(_,i)=>`<circle cx="${35+i*66}" cy="${68+(i%3)*13}" r="${2+(i%2)}" fill="${i%2?"#ffd65d":"#ef7e8f"}" opacity=".8"/>`).join("")}
+      <text x="24" y="34" fill="#f0d59d" font-family="Georgia,serif" font-size="17">${farewell?"Visarjan · Until next year":"Ganpati Bappa Morya"}</text>
+      <text x="24" y="54" fill="#8fb3ad" font-family="Arial,sans-serif" font-size="10">PROCESSION STEP ${s+1} OF 7</text>
+    </svg>`;
+  }
+
+  function festivalDaySvg(day=1,duration=3){
+    const d=Math.max(1,Number(day)||1), total=Math.max(d,Number(duration)||3), night=d%2===0;
+    return `<svg class="festival-day-art" viewBox="0 0 520 210" role="img" aria-label="Festival day ${d} of ${total}">
+      <defs><linearGradient id="fd${d}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${night?"#183b5c":"#a85c35"}"/><stop offset="1" stop-color="#08171d"/></linearGradient></defs>
+      <rect width="520" height="210" rx="18" fill="url(#fd${d})"/>
+      <circle cx="430" cy="45" r="22" fill="${night?"#f3e7bc":"#f5c95c"}" opacity=".95"/>
+      <path d="M0 156 Q80 130 160 156 T320 156 T480 156 T640 156 V210 H0Z" fill="#15342f"/>
+      <path d="M140 160 L168 95 L196 160 M324 160 L352 95 L380 160" fill="none" stroke="#d89b3e" stroke-width="8"/>
+      <path d="M150 110 Q260 48 370 110" fill="none" stroke="#edba71" stroke-width="5"/>
+      ${Array.from({length:8},(_,i)=>`<circle cx="${158+i*29}" cy="${106-Math.sin(i/7*Math.PI)*35}" r="4" fill="${i%2?"#f5a4b8":"#ffd45f"}"/>`).join("")}
+      <rect x="214" y="123" width="92" height="38" rx="8" fill="#8a4d2d" stroke="#e3b66e" stroke-width="2"/>
+      <text x="260" y="72" text-anchor="middle" fill="#fff0c7" font-family="Georgia,serif" font-size="26">Day ${d}</text>
+      <text x="260" y="92" text-anchor="middle" fill="#d7c9aa" font-family="Arial,sans-serif" font-size="11">OF ${total} FESTIVAL DAYS</text>
+    </svg>`;
+  }
+
+  window.GFJArt={mandapSvg,decorSvg,pujaSvg,scene,pujaScene,processionSvg,festivalDaySvg};
 })();

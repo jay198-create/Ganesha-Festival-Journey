@@ -33,7 +33,7 @@
       ].map(([id,label])=>`<button data-v5="tab" data-id="${id}" class="${state.view===id?"active":""}">${label}</button>`).join("")}
     </div>
     <div class="v5-content">${body}</div>
-    <div class="v5-footer"><button data-v5="back-game" class="secondary">← Back to game</button><small>Saved only on this device. No account, email, password or student data is collected.</small></div>
+    <div class="v5-footer"><button data-v5="back-game" class="secondary">← Back to game</button><small>Anonymous cloud memory enabled. No account, email, password or student identity is collected.</small></div>
   </section>`;
 
   function render(){
@@ -157,7 +157,7 @@
     if(a==="learn-mantra"){if(!state.mantraLearned.includes(id))state.mantraLearned.push(id);save();render();return;}
     if(a==="complete-day"){if(state.day<state.duration)state.day++; else state.processionStep=0;save();state.view=state.day>=state.duration?"procession":"festival";render();return;}
     if(a==="procession-next"){const steps=7;if(state.processionStep<steps-1)state.processionStep++;else state.visarjanComplete=true;save();render();return;}
-    if(a==="back-game"){save();location.reload();return;}
+    if(a==="back-game"){save();Promise.resolve(window.GFJAnonymousSave?.syncNow?.()).finally(()=>location.reload());return;}
   },true);
 
   document.addEventListener("change",ev=>{

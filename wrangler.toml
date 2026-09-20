@@ -1,0 +1,6 @@
+name = "ganesha-festival-journey"
+compatibility_date = "2026-09-20"
+pages_build_output_dir = "dist"
+
+# In Cloudflare Pages, bind a D1 database to the variable name DB.
+# No user/account database is required.

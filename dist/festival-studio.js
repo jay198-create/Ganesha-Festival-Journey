@@ -33,7 +33,7 @@
       ].map(([id,label])=>`<button data-v5="tab" data-id="${id}" class="${state.view===id?"active":""}">${label}</button>`).join("")}
     </div>
     <div class="v5-content">${body}</div>
-    <div class="v5-footer"><button data-v5="back-game" class="secondary">← Back to game</button><small>Cloud sync: ${window.GFJCloud?.user?"signed in":"local only until you sign in"}</small></div>
+    <div class="v5-footer"><button data-v5="back-game" class="secondary">← Back to game</button><small>Saved only on this device. No account, email, password or student data is collected.</small></div>
   </section>`;
 
   function render(){
@@ -50,7 +50,7 @@
     return `<div class="v5-grid two">
       <article class="v5-card">
         <span class="eyebrow">YOUR GROUP</span><h2>Mandal setup</h2>
-        <label>Mandal / group name<input id="v5-group" value="${e(state.groupName)}" maxlength="40"></label>
+        <label>Festival group name (optional, device only)<input id="v5-group" value="${e(state.groupName)}" maxlength="40" autocomplete="off"></label>
         <label>Festival duration<select id="v5-duration">${D.durations.map(x=>`<option value="${x}" ${state.duration===x?"selected":""}>${x} days</option>`).join("")}</select></label>
         <label>Chanda collected<input id="v5-chanda" type="number" min="0" step="10" value="${state.chanda}"></label>
         <button data-v5="save-setup" class="primary">SAVE MANDAL</button>
@@ -157,8 +157,7 @@
     if(a==="learn-mantra"){if(!state.mantraLearned.includes(id))state.mantraLearned.push(id);save();render();return;}
     if(a==="complete-day"){if(state.day<state.duration)state.day++; else state.processionStep=0;save();state.view=state.day>=state.duration?"procession":"festival";render();return;}
     if(a==="procession-next"){const steps=7;if(state.processionStep<steps-1)state.processionStep++;else state.visarjanComplete=true;save();render();return;}
-    if(a==="back-game"){save();window.GFJCloud?.syncNow?.().finally(()=>location.reload());return;}
-    if(a==="account"){openAccount();return;}
+    if(a==="back-game"){save();location.reload();return;}
   },true);
 
   document.addEventListener("change",ev=>{
@@ -167,26 +166,12 @@
   });
 
   function addNav(){
-    const nav=document.querySelector("header nav"); if(!nav||nav.querySelector("[data-v5='open']")) return;
-    const studio=document.createElement("button");studio.textContent="Festival Studio";studio.dataset.v5="open";nav.insertBefore(studio,nav.firstChild);
-    const account=document.createElement("button");account.textContent=window.GFJCloud?.user?"Account":"Sign in";account.dataset.v5="account";nav.appendChild(account);
-  }
-
-  function openAccount(){
-    const modal=document.querySelector("#modal"),body=document.querySelector("#dialog-body"); if(!modal||!body)return;
-    const u=window.GFJCloud?.user;
-    body.innerHTML=u?`<span class="eyebrow">CLOUD SAVE</span><h2>${e(u.displayName||u.email)}</h2><p>${e(u.email)}</p><p>Your game progress, modaks, active run and festival build are stored on the server.</p><button id="cloud-sync-now" class="primary">SYNC NOW</button><button id="cloud-logout" class="secondary">SIGN OUT</button>`:
-    `<span class="eyebrow">CLOUD SAVE</span><h2>Keep your festival forever.</h2><p>Sign in to restore progress after clearing browser data or changing devices.</p><label>Email<input id="cloud-email" type="email"></label><label>Password<input id="cloud-password" type="password" minlength="8"></label><label>Display name<input id="cloud-name" maxlength="40"></label><div class="actions"><button id="cloud-login" class="primary">SIGN IN</button><button id="cloud-register" class="secondary">CREATE ACCOUNT</button></div><p id="cloud-error" class="fine"></p>`;
-    if(!modal.open)modal.showModal();
-    body.querySelector("#cloud-sync-now")?.addEventListener("click",async()=>{await window.GFJCloud.syncNow();alert("Cloud save updated.");});
-    body.querySelector("#cloud-logout")?.addEventListener("click",async()=>{await window.GFJCloud.logout();location.reload();});
-    const auth=async mode=>{
-      const email=body.querySelector("#cloud-email").value,password=body.querySelector("#cloud-password").value,name=body.querySelector("#cloud-name").value,err=body.querySelector("#cloud-error");
-      try{err.textContent="Working…"; if(mode==="login")await window.GFJCloud.login(email,password);else await window.GFJCloud.register(email,password,name); location.reload();}
-      catch(ex){err.textContent=ex.message;}
-    };
-    body.querySelector("#cloud-login")?.addEventListener("click",()=>auth("login"));
-    body.querySelector("#cloud-register")?.addEventListener("click",()=>auth("register"));
+    const nav=document.querySelector("header nav");
+    if(!nav||nav.querySelector("[data-v5='open']")) return;
+    const studio=document.createElement("button");
+    studio.textContent="Festival Studio";
+    studio.dataset.v5="open";
+    nav.insertBefore(studio,nav.firstChild);
   }
 
   addNav();

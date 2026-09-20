@@ -4,61 +4,45 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#081b23" />
-    <meta
-      name="description"
-      content="Master five festival trials. Earn modaks, build your own mandap and chase your best run."
-    />
+    <meta name="description" content="Master festival trials, earn modaks, build a Ganesh Chaturthi celebration and learn through play." />
     <title>Ganesha's Festival Journey</title>
-    <link
-      rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23081b23'/%3E%3Ctext x='8' y='47' font-size='44'%3E🪔%3C/text%3E%3C/svg%3E"
-    />
-    <link rel="stylesheet" href="style.css?v=5" />\n    <link rel="stylesheet" href="festival-studio.css?v=5" />\n    <link rel="stylesheet" href="level-arena.css?v=5" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23081b23'/%3E%3Ctext x='8' y='47' font-size='44'%3E🪔%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="style.css?v=5" />
+    <link rel="stylesheet" href="festival-studio.css?v=5" />
+    <link rel="stylesheet" href="level-arena.css?v=5" />
   </head>
   <body>
     <div class="grain" aria-hidden="true"></div>
     <header>
       <button class="brand" data-action="home">
-        <span class="brand-seal">G</span
-        ><span>GANESHA'S<span>FESTIVAL JOURNEY</span></span>
+        <span class="brand-seal">G</span><span>GANESHA'S<span>FESTIVAL JOURNEY</span></span>
       </button>
       <nav aria-label="Main navigation">
-        <button data-action="trail">Journey</button
-        ><button data-action="workshop">My festival</button
-        ><button data-action="records">Records</button
-        ><button
-          class="icon-button"
-          data-action="settings"
-          aria-label="Sound settings"
-        >
-          ♫</button
-        ><button
-          class="icon-button"
-          data-action="help"
-          aria-label="How to play"
-        >
-          ?
-        </button>
+        <button data-action="trail">Journey</button>
+        <button data-action="workshop">My festival</button>
+        <button data-action="records">Records</button>
+        <button class="icon-button" data-action="settings" aria-label="Sound settings">♫</button>
+        <button class="icon-button" data-action="help" aria-label="How to play">?</button>
       </nav>
     </header>
     <main id="app"><p class="loading-message">Lighting the festival…</p></main>
     <footer>
-      <span>GANPATI BAPPA MORYA</span
-      ><span>Memory · Maths · Discovery · Rhythm · Logic</span
-      ><button data-action="about">About & credits</button>
+      <span>GANPATI BAPPA MORYA</span>
+      <span>Memory · Maths · Discovery · Rhythm · Logic</span>
+      <button data-action="about">About & credits</button>
     </footer>
     <dialog id="modal">
-      <button class="close icon-button" data-action="close" aria-label="Close">
-        ×
-      </button>
+      <button class="close icon-button" data-action="close" aria-label="Close">×</button>
       <div id="dialog-body"></div>
     </dialog>
     <div id="toast" role="status" aria-live="polite"></div>
     <div id="particles" aria-hidden="true"></div>
-    <noscript
-      >This game needs JavaScript. Enable it in your browser to play.</noscript
-    >
-    <script src="core.js?v=3"></script>
-    <script src="game.js?v=3"></script>
+    <noscript>This game needs JavaScript. Enable it in your browser to play.</noscript>
+    <script src="core.js?v=5"></script>
+    <script src="festival-data.js?v=5"></script>
+    <script src="game.js?v=5"></script>
+    <script src="level-arena.js?v=5"></script>
+    <script src="festival-studio.js?v=5"></script>
+    <script src="privacy-save.js?v=5"></script>
   </body>
 </html>

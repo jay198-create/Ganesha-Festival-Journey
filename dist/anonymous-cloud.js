@@ -203,7 +203,7 @@
       <h2>Your progress can survive a browser reset.</h2>
       <p>You may save a first name or nickname so the game can greet you. No email, phone number, password, roll number, college ID or payment information is requested.</p>
       <label>Player name / nickname (optional)
-        <input id="player-name-input" maxlength="24" autocomplete="off" value="${getPlayerName().replace(/"/g, "&quot;")}" placeholder="Example: Jayanth">
+        <input id="player-name-input" maxlength="24" autocomplete="off" value="" placeholder="Example: Jayanth">
       </label>
       <button id="save-player-name" class="secondary full">SAVE NAME</button>
       <p class="fine">If all browser data is erased, the website cannot know which anonymous save belongs to you automatically. Keep the recovery key below and enter it again after the reset.</p>
@@ -222,6 +222,8 @@
       <p id="anon-status" class="fine">${serverAvailable ? "Anonymous cloud save is enabled." : "Cloud save is currently unavailable; local progress still works."}</p>
     `;
     if (!modal.open) modal.showModal();
+    const nameInput = body.querySelector("#player-name-input");
+    if (nameInput) nameInput.value = getPlayerName();
 
     body.querySelector("#save-player-name")?.addEventListener("click", () => {
       const name = setPlayerName(body.querySelector("#player-name-input").value);
@@ -247,19 +249,33 @@
 
   function refreshWelcome() {
     const name = getPlayerName();
-    document.querySelectorAll("[data-player-welcome]").forEach(el => el.remove());
-    if (!name) return;
+    const saveButton = document.querySelector("[data-anon-save]");
+    if (saveButton) {
+      saveButton.textContent = name ? name + " · Save" : "Save";
+      saveButton.setAttribute("aria-label", "Recovery-key cloud save");
+    }
+
+    const existing = document.querySelector("[data-player-welcome]");
+    if (!name) {
+      existing?.remove();
+      return;
+    }
+
+    const wanted = "Welcome, " + name;
+    if (existing) {
+      if (existing.textContent !== wanted) existing.textContent = wanted;
+      return;
+    }
 
     const home = document.querySelector(".home-content");
-    if (home) {
-      const greeting = document.createElement("div");
-      greeting.className = "player-welcome";
-      greeting.dataset.playerWelcome = "true";
-      greeting.textContent = "Welcome, " + name;
-      const eyebrow = home.querySelector(".eyebrow");
-      if (eyebrow) eyebrow.insertAdjacentElement("afterend", greeting);
-      else home.prepend(greeting);
-    }
+    if (!home) return;
+    const greeting = document.createElement("div");
+    greeting.className = "player-welcome";
+    greeting.dataset.playerWelcome = "true";
+    greeting.textContent = wanted;
+    const eyebrow = home.querySelector(".eyebrow");
+    if (eyebrow) eyebrow.insertAdjacentElement("afterend", greeting);
+    else home.prepend(greeting);
   }
 
   function addSaveButton() {
@@ -268,7 +284,7 @@
     const button = document.createElement("button");
     button.textContent = getPlayerName() ? getPlayerName() + " · Save" : "Save";
     button.dataset.anonSave = "open";
-    button.setAttribute("aria-label", "Anonymous cloud save and recovery key");
+    button.setAttribute("aria-label", "Recovery-key cloud save");
     nav.appendChild(button);
     refreshWelcome();
   }

@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const PROFILE_KEY="ganesha-festival-v3", BUILDER_KEY="ganesha-festival-v5-builder", SOUND_KEY="ganesha-sound";
+  const PROFILE_KEY="ganesha-festival-v3", BUILDER_KEY="ganesha-festival-v5-builder", LEVEL_KEY="ganesha-festival-v5-levels", SOUND_KEY="ganesha-sound";
   const api = async (path,options={}) => {
     const r=await fetch(path,{credentials:"same-origin",headers:{"content-type":"application/json",...(options.headers||{})},...options});
     const data=await r.json().catch(()=>({}));
@@ -34,7 +34,7 @@
   const originalSet=Storage.prototype.setItem;
   Storage.prototype.setItem=function(k,v){
     originalSet.call(this,k,v);
-    if(this===localStorage && [PROFILE_KEY,BUILDER_KEY,SOUND_KEY].includes(k) && booted) sync();
+    if(this===localStorage && [PROFILE_KEY,BUILDER_KEY,LEVEL_KEY,SOUND_KEY].includes(k) && booted) sync();
   };
   window.GFJCloud={
     get user(){return user;},

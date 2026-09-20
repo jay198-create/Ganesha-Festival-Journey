@@ -100,7 +100,7 @@
     ev.preventDefault();ev.stopImmediatePropagation();
     const a=b.dataset.arena;
     if(a==="open"){try{document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape"}));}catch{}st.screen="menu";save();menu();return}
-    if(a==="exit"){save();window.GFJCloud?.syncNow?.().finally(()=>location.reload());return}
+    if(a==="exit"){save();location.reload();return}
     if(a==="menu"){st.screen="menu";save();menu();return}
     if(a==="game"){st.game=b.dataset.id;st.screen="menu";save();menu();return}
     if(a==="difficulty"){st.difficulty=b.dataset.id;st.screen="menu";save();menu();return}

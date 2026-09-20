@@ -1,0 +1,36 @@
+name: Game Tests
+
+on:
+  push:
+    branches:
+      - main
+      - v5-festival-cloud
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run regression tests
+        run: npm test
+      - name: Build deployment ZIP
+        run: |
+          zip -r Ganesha-Festival-Journey-v5-complete.zip .             -x ".git/*"             -x "node_modules/*"             -x "Ganesha-Festival-Journey-v5-complete.zip"
+      - name: Upload deployment ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ganesha-festival-journey-v5
+          path: Ganesha-Festival-Journey-v5-complete.zip
+          retention-days: 30

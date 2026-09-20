@@ -1,10 +1,10 @@
 {
   "name": "ganeshas-festival-journey",
-  "version": "3.0.1",
+  "version": "5.0.0",
   "private": true,
   "scripts": {
     "dev": "vite dist",
-    "test": "node tests/core.test.cjs && node tests/ui.test.cjs"
+    "test": "node tests/core.test.cjs && node tests/ui.test.cjs && node tests/v5.test.cjs"
   },
   "devDependencies": {
     "jsdom": "^26.1.0",

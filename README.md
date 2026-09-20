@@ -56,3 +56,43 @@ assistance. The game contains an About & credits screen.
 Local challenge records are not anti-cheat-secured online leaderboard entries.
 No scores are submitted automatically. A trusted online ranking would require
 server-side verification and an organizer-approved integration.
+
+## Version 5 development branch
+
+The `v5-festival-cloud` branch expands the original game into a larger Ganesh Chaturthi festival simulator while preserving the existing browser game.
+
+New systems include:
+
+- Five mini-games with Easy, Medium and Hard progression through 100 levels plus Endless mode
+- Modak rewards shared with the main game economy
+- 131-idol shop/catalog support
+- 120 procedural mandap designs
+- 500 decoration combinations
+- Puja-item store
+- Mantra learning with text, pronunciation and meanings
+- 3, 6, 9 and 11-day festival progression
+- Daily puja checklist
+- Procession and Visarjan finale
+- Resume data for active runs, scores, modaks, inventory, festival progress and level progress
+- Recovery-key Cloudflare D1 game memory with optional player nickname
+
+### Contest privacy and durable game memory
+
+There are no player accounts. A player may optionally enter a first name or nickname for in-game personalization such as “Welcome, Jayanth”. The game does not request email, phone number, password, roll number, college ID, date of birth, address or payment information.
+
+Cloudflare D1 is retained for recovery-key game-state persistence. If a player supplies a nickname, that nickname is stored with the game save.
+
+Each installation gets a random 256-bit recovery key. The server stores the SHA-256 hash of that key together with structured game progress and the optional nickname. The raw recovery key is not stored in D1.
+
+The synchronized state includes scores, Modaks, active run, level progress, purchased festival items, festival day and other gameplay state. The free-text Mandal/group name is deliberately excluded from server synchronization.
+
+If all browser cookies and site storage are cleared, the browser also loses its copy of the anonymous recovery key. The player can paste the saved recovery key back into the game to restore progress from D1. No account is required.
+
+Automatic restoration after a complete browser wipe without any recovery key would require another persistent identifier such as an account or device fingerprint, which this contest build intentionally avoids.
+
+See `docs/ANONYMOUS-CLOUD-SAVE.md` for setup and testing.
+
+### Large idol artwork
+
+The generated 131-idol PNG library is intentionally stored separately from the public Git repository because the asset pack is very large. The catalog expects `assets/idols/idol_001.png` through `idol_131.png`. For production, these assets can be copied into that directory or served as static assets without collecting player information.
+

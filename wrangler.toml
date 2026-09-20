@@ -1,6 +1,0 @@
-name = "ganesha-festival-journey"
-compatibility_date = "2026-09-20"
-pages_build_output_dir = "dist"
-
-# Bind a Cloudflare D1 database as DB in Pages > Settings > Bindings.
-# The production database id stays in Cloudflare, not in this public repository.

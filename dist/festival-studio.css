@@ -15,3 +15,7 @@
 .scene-decor-0{left:4%;top:9%}.scene-decor-1{right:4%;top:9%}.scene-decor-2{left:10%;bottom:8%}.scene-decor-3{right:10%;bottom:8%}.scene-decor-4{left:28%;top:4%}.scene-decor-5{right:28%;top:4%}.scene-decor-6{left:4%;top:44%}.scene-decor-7{right:4%;top:44%}.scene-decor-8{left:25%;bottom:3%}.scene-decor-9{right:25%;bottom:3%}
 .scene-floor-glow{position:absolute;left:20%;right:20%;bottom:23px;height:38px;background:radial-gradient(ellipse,#edba7155,transparent 68%);z-index:2}
 @media(max-width:560px){.festival-scene-art{min-height:315px}.scene-idol{width:40%;height:58%;bottom:38px}.scene-decor{width:50px;height:50px}.decor-thumb{width:52px;height:52px;flex-basis:52px}}
+
+.ritual-scene,.festival-day-scene,.procession-scene{margin:14px 0 18px;border-radius:12px;overflow:hidden}
+.ritual-art,.festival-day-art,.procession-art{display:block;width:100%;height:auto}
+.procession-scene{border:1px solid var(--line);background:#08191f}

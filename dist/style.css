@@ -2119,3 +2119,17 @@ dialog li b {
     display: none;
   }
 }
+
+.player-welcome {
+  display: inline-flex;
+  align-items: center;
+  margin: 12px 0 0;
+  padding: 7px 12px;
+  border: 1px solid #edba7145;
+  border-radius: 999px;
+  background: #081b23aa;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+}

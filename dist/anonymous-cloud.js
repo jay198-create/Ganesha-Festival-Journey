@@ -2,12 +2,13 @@
   "use strict";
 
   const SAVE_KEY_NAME = "ganesha-anonymous-save-key";
+  const PLAYER_NAME_KEY = "ganesha-player-name";
   const PROFILE_KEY = "ganesha-festival-v3";
   const BUILDER_KEY = "ganesha-festival-v5-builder";
   const LEVEL_KEY = "ganesha-festival-v5-levels";
   const SOUND_KEY = "ganesha-sound";
   const LOCAL_UPDATED_KEY = "ganesha-local-save-updated-at";
-  const GAME_KEYS = [PROFILE_KEY, BUILDER_KEY, LEVEL_KEY, SOUND_KEY];
+  const GAME_KEYS = [PROFILE_KEY, BUILDER_KEY, LEVEL_KEY, SOUND_KEY, PLAYER_NAME_KEY];
 
   let syncing = false;
   let timer = null;
@@ -30,6 +31,26 @@
     return key;
   }
 
+  function cleanPlayerName(value) {
+    return String(value || "")
+      .trim()
+      .replace(/\s+/g, " ")
+      .slice(0, 24);
+  }
+
+  function getPlayerName() {
+    return cleanPlayerName(localStorage.getItem(PLAYER_NAME_KEY) || "");
+  }
+
+  function setPlayerName(value) {
+    const name = cleanPlayerName(value);
+    if (name) localStorage.setItem(PLAYER_NAME_KEY, name);
+    else localStorage.removeItem(PLAYER_NAME_KEY);
+    refreshWelcome();
+    scheduleSync();
+    return name;
+  }
+
   function sanitizeBuilder(value) {
     if (!value || typeof value !== "object") return value;
     const copy = JSON.parse(JSON.stringify(value));
@@ -45,6 +66,7 @@
     };
     return {
       version: 5,
+      playerName: getPlayerName() || null,
       profile: read(PROFILE_KEY),
       builder: sanitizeBuilder(read(BUILDER_KEY)),
       levels: read(LEVEL_KEY),
@@ -55,6 +77,7 @@
 
   function applyRemote(state) {
     if (!state || typeof state !== "object") return;
+    if (state.playerName) originalSetItem.call(localStorage, PLAYER_NAME_KEY, cleanPlayerName(state.playerName));
     if (state.profile) originalSetItem.call(localStorage, PROFILE_KEY, JSON.stringify(state.profile));
     if (state.builder) {
       let current = {};
@@ -176,10 +199,14 @@
     const key = getRecoveryKey();
 
     body.innerHTML = `
-      <span class="eyebrow">ANONYMOUS GAME MEMORY</span>
+      <span class="eyebrow">GAME MEMORY</span>
       <h2>Your progress can survive a browser reset.</h2>
-      <p>The game stores scores, Modaks, levels and festival progress in an anonymous Cloudflare save. It does not ask for a name, email, phone number, password, roll number or college ID.</p>
-      <p class="fine">If all browser data is erased, the website cannot know which anonymous save belongs to you automatically. Keep this recovery key and enter it again after the reset.</p>
+      <p>You may save a first name or nickname so the game can greet you. No email, phone number, password, roll number, college ID or payment information is requested.</p>
+      <label>Player name / nickname (optional)
+        <input id="player-name-input" maxlength="24" autocomplete="off" value="${getPlayerName().replace(/"/g, "&quot;")}" placeholder="Example: Jayanth">
+      </label>
+      <button id="save-player-name" class="secondary full">SAVE NAME</button>
+      <p class="fine">If all browser data is erased, the website cannot know which anonymous save belongs to you automatically. Keep the recovery key below and enter it again after the reset.</p>
       <label>Recovery key
         <input id="anon-key-view" value="${key}" readonly autocomplete="off">
       </label>
@@ -196,6 +223,10 @@
     `;
     if (!modal.open) modal.showModal();
 
+    body.querySelector("#save-player-name")?.addEventListener("click", () => {
+      const name = setPlayerName(body.querySelector("#player-name-input").value);
+      body.querySelector("#anon-status").textContent = name ? `Saved. Welcome, ${name}!` : "Player name cleared.";
+    });
     body.querySelector("#anon-copy")?.addEventListener("click", async () => {
       await navigator.clipboard.writeText(key);
       body.querySelector("#anon-status").textContent = "Recovery key copied.";
@@ -214,14 +245,32 @@
     });
   }
 
+  function refreshWelcome() {
+    const name = getPlayerName();
+    document.querySelectorAll("[data-player-welcome]").forEach(el => el.remove());
+    if (!name) return;
+
+    const home = document.querySelector(".home-content");
+    if (home) {
+      const greeting = document.createElement("div");
+      greeting.className = "player-welcome";
+      greeting.dataset.playerWelcome = "true";
+      greeting.textContent = "Welcome, " + name;
+      const eyebrow = home.querySelector(".eyebrow");
+      if (eyebrow) eyebrow.insertAdjacentElement("afterend", greeting);
+      else home.prepend(greeting);
+    }
+  }
+
   function addSaveButton() {
     const nav = document.querySelector("header nav");
     if (!nav || nav.querySelector("[data-anon-save]")) return;
     const button = document.createElement("button");
-    button.textContent = "Save";
+    button.textContent = getPlayerName() ? getPlayerName() + " · Save" : "Save";
     button.dataset.anonSave = "open";
     button.setAttribute("aria-label", "Anonymous cloud save and recovery key");
     nav.appendChild(button);
+    refreshWelcome();
   }
 
   document.addEventListener("click", event => {
@@ -234,6 +283,8 @@
 
   window.GFJAnonymousSave = {
     getRecoveryKey,
+    getPlayerName,
+    setPlayerName,
     syncNow,
     restoreWithKey,
     localSnapshot
@@ -258,7 +309,11 @@
     await loadScript("level-arena.js?v=5");
     await loadScript("festival-studio.js?v=5");
     addSaveButton();
-    new MutationObserver(addSaveButton).observe(document.body,{childList:true,subtree:true});
+    refreshWelcome();
+    new MutationObserver(() => {
+      addSaveButton();
+      refreshWelcome();
+    }).observe(document.body,{childList:true,subtree:true});
     scheduleSync();
     window.addEventListener("pagehide", () => {
       if (!serverAvailable) return;

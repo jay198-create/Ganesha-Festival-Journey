@@ -56,3 +56,33 @@ assistance. The game contains an About & credits screen.
 Local challenge records are not anti-cheat-secured online leaderboard entries.
 No scores are submitted automatically. A trusted online ranking would require
 server-side verification and an organizer-approved integration.
+
+
+## Version 5 development branch
+
+The `v5-festival-cloud` branch expands the original game into a larger Ganesh Chaturthi festival simulator while preserving the existing browser game.
+
+New systems include:
+
+- Five mini-games with Easy, Medium and Hard progression through 100 levels plus Endless mode
+- Modak rewards shared with the main game economy
+- 131-idol shop/catalog support
+- 120 procedural mandap designs
+- 500 decoration combinations
+- Puja-item store
+- Mantra learning with text, pronunciation and meanings
+- 3, 6, 9 and 11-day festival progression
+- Daily puja checklist
+- Procession and Visarjan finale
+- Player accounts and durable Cloudflare D1 saves
+- Resume data for active runs, scores, modaks, inventory, festival progress and level progress
+
+### Durable saves
+
+Local browser storage is now a cache for responsiveness. When the player signs in, the same state is synchronized to Cloudflare D1. Clearing browser data removes the local copy and login cookie, but not the D1 account save. Signing in again restores the saved game.
+
+See `docs/CLOUD-SAVE-SETUP.md` before deploying the v5 branch. The Cloudflare Pages project must have a D1 binding named `DB` and the database schema must be initialized.
+
+### Large idol artwork
+
+The generated 131-idol PNG library is intentionally stored separately from the public Git repository because the asset pack is very large. The catalog expects `assets/idols/idol_001.png` through `idol_131.png`. For production, these assets can be served from Cloudflare R2 / Images or copied into that directory.

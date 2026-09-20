@@ -198,7 +198,7 @@
       <g transform="translate(${135+s*48} ${water?151:165})">
         <rect x="-48" y="40" width="96" height="18" rx="5" fill="#c88d34"/>
         <circle cx="-35" cy="61" r="8" fill="#1d2426"/><circle cx="35" cy="61" r="8" fill="#1d2426"/>
-        <g transform="translate(0 8)" opacity="${farewell?.72:1}">
+        <g transform="translate(0 8)" opacity="${farewell ? .72 : 1}">
           <circle cy="-18" r="17" fill="#e1a873"/><ellipse cx="-19" cy="-18" rx="12" ry="19" fill="#e8b682"/><ellipse cx="19" cy="-18" rx="12" ry="19" fill="#e8b682"/>
           <path d="M3 -8 Q20 5 5 23 Q-3 24-4 13 Q8 9 3-8" fill="#dca16b"/><ellipse cy="18" rx="23" ry="27" fill="#d14d38"/>
           <path d="M-11 -34 Q0 -55 11 -34Z" fill="#d4a538" stroke="#ffe49a" stroke-width="1.5"/>
